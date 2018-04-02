@@ -1,0 +1,12 @@
+{
+  "name": "JSON.format",
+  "version": "0.0.1",
+  "description": "Format JSON responses in the browser",
+  "scripts": {
+    "dev": "webextension-toolbox dev",
+    "build": "webextension-toolbox build"
+  },
+  "devDependencies": {
+    "webextension-toolbox": "latest"
+  }
+}
