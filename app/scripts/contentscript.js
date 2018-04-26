@@ -39,7 +39,7 @@
         changeLink($link);
 
         if (index + 1 === $validLinks.length) {
-          log(`Removed no-participation subdomain from ${changedLinks} links`);
+          log(`Removed no-participation subdomain from ${changedLinks} link(s)`);
         }
       });
     });
