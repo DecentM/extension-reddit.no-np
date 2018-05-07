@@ -2,7 +2,7 @@
   "name": "Reddit remove no-participation",
   "short_name": "Reddit No-NP",
   "description": "Replaces all no-participation links on Reddit to their regular version",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 2,
   "icons": {
     "16": "images/icon-16.png",
