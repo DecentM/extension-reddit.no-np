@@ -1,5 +1,3 @@
-import assert from 'assert'
-
 ((window, document, undefined) => new Promise((resolve, reject) => {
   'use strict';
   
