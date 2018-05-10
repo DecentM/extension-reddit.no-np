@@ -1,6 +1,6 @@
 {
   "name": "JSON.format",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "Format JSON responses in the browser",
   "scripts": {
     "dev": "webextension-toolbox dev",
