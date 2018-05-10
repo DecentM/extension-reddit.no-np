@@ -9,17 +9,63 @@ import {debounce,} from 'lodash'
   }
   
   try {
+    const tooltip = ({
+      show = true
+    }) => {
+      const $tooltip = document.getElementById('decentm-np-tooltip');
+      
+      if (show) {
+        $tooltip.classList.add('show')
+      } else {
+        $tooltip.classList.remove('show')
+      }
+    }
+    
+    const repositionTooltip = debounce(({
+      vertical = 0,
+      horizontal = 0
+    }) => {
+      const $tooltip = document.getElementById('decentm-np-tooltip');
+      const width = $tooltip.offsetWidth
+      const height = $tooltip.offsetHeight
+
+      $tooltip.style.transform = [
+        `translate(${horizontal - width / 2}px, ${vertical - height - 16}px)`,
+        `scale(1)`
+      ].join(' ');
+    }, 150);
+
     const changeLink = ($link) => {
       const rx = /np\.reddit\.com/gi;
       
       $link.href = $link.href.replace(rx, 'reddit.com');
       $link.classList.add('decentm-np-replaced');
+      
+      $link.addEventListener('mouseover', () => {
+        tooltip({
+          'show': true,
+        });
+      });
+
+      $link.addEventListener('mouseout', () => {
+        tooltip({
+          'show': false,
+        });
+      });
+
+      $link.addEventListener('mousemove', ({clientY, clientX}) => {
+        repositionTooltip({
+          'vertical':   clientY,
+          'horizontal': clientX,
+        });
+      });
     };
     let changedLinks = 0;
     
     const notification = (text) => {
       const $notification = document.createElement('div');
       
+      $notification.classList.add('decentm-np-block');
       $notification.classList.add('decentm-np-notification');
       $notification.innerHTML = text;
 
@@ -106,38 +152,11 @@ import {debounce,} from 'lodash'
     $stylesheet.id = 'decentm-np-replacer-css';
     
     $stylesheet.innerHTML = `
-    .decentm-np-replaced::after {
-      transition:
-      width .25s cubic-bezier(.56,.01,.44,1),
-      clip-path .25s cubic-bezier(.56,.01,.44,1) !important;
-      
-      display: inline-block !important;
-      content: "(-NP)" !important;
-      width: 0 !important;
-      text-align: center !important;
-      vertical-align: text-bottom !important;
-      height: 0 !important;
-      font-weight: 300 !important;
-      pointer-events: none !important;
-      white-space: nowrap !important;
-      clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%) !important;
-      margin-left: 0;
-    }
-    
-    .decentm-np-replaced:hover::after {
-      width: 45px !important;
-      height: 19px !important;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%) !important;
-      margin-left: 8px;
-    }
-    
-    .decentm-np-notification {
+    .decentm-np-block {
       padding-top: 16px;
       padding-bottom: 16px;
       padding-left: 24px;
       padding-right: 24px;
-      bottom: 2rem;
-      right: 2rem;
       background: linear-gradient(130deg, #000FE5, #005FFF);
       font-size: 14px;
       color: white;
@@ -159,14 +178,34 @@ import {debounce,} from 'lodash'
       transition-timing-function: ease-in-out;
     }
     
-    .decentm-np-notification.show {
+    .decentm-np-notification {
+      bottom: 2rem;
+      right: 2rem;
+    }
+    
+    .decentm-np-block.show {
       opacity: 1;
       transform: scale(1);
       pointer-events: all;
     }
+    
+    .decentm-np-tooltip {
+      top: 0;
+      left: 0;
+      pointer-events: none !important;
+    }
     `;
     
-    document.querySelector('body').appendChild($stylesheet);
+    const $tooltip = document.createElement('div')
+    
+    $tooltip.classList.add('decentm-np-block')
+    $tooltip.classList.add('decentm-np-tooltip')
+    $tooltip.id = 'decentm-np-tooltip'
+    $tooltip.innerHTML = '(-NP)'
+
+    document.body.appendChild($tooltip);
+    document.body.appendChild($stylesheet);
+
     changeLinks()
     resolve()
   } catch (error) {
