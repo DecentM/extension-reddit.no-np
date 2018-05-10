@@ -39,24 +39,32 @@ import {debounce,} from 'lodash'
       changedLinks = 0;
     }
     
-    const log = debounce((text) => {
-      notification(text);
-      console.log(
-        `%c ${text} %c https://github.com/DecentM/extension-reddit.no-np`,
-        [
-          'color: white;',
-          'padding: 5px;',
-          'padding-left: 7px;',
-          'padding-right: 7px;',
-          'background: linear-gradient(130deg, #000FE5, #005FFF);',
-          'border-radius: 3px;',
-          'margin-right: 16px;',
-        ].join(''),
-        [
-          'margin-bottom: 16px;',
-          'margin-top: 16px;',
-        ].join('')
-      );
+    const log = debounce((text, {
+      devtools = true,
+      page = true,
+    }) => {
+      if (page) {
+        notification(text);
+      }
+      
+      if (devtools) {
+        console.log(
+          `%c ${text} %c https://github.com/DecentM/extension-reddit.no-np`,
+          [
+            'color: white;',
+            'padding: 5px;',
+            'padding-left: 7px;',
+            'padding-right: 7px;',
+            'background: linear-gradient(130deg, #000FE5, #005FFF);',
+            'border-radius: 3px;',
+            'margin-right: 16px;',
+          ].join(''),
+          [
+            'margin-bottom: 16px;',
+            'margin-top: 16px;',
+          ].join('')
+        );
+      }
     }, 400);
 
     const changeLinks = ($target) => new Promise((resolve, reject) => {
@@ -67,20 +75,15 @@ import {debounce,} from 'lodash'
       const $links = Array.prototype.slice.call($target.getElementsByTagName('a'));
       const $validLinks = $links.filter(($link) => $link.href.includes('np.reddit.com'));
       
-      observer.observe(document.body, {
-        'subtree':   true,
-        'childList': true,
-      });
-      
       $validLinks.forEach(($link, index) => {
         requestIdleCallback(() => {
           changeLink($link);
           changedLinks = changedLinks + 1;
           
           if (index + 1 === $validLinks.length) {
-            if (changedLinks > 10) {
-              log(`Removed no-participation subdomain from ${changedLinks} link(s)`);
-            }
+            log(`Removed no-participation subdomain from ${changedLinks} link(s)`, {
+              'page': changedLinks > 10
+            });
           }
         });
       });
@@ -93,6 +96,11 @@ import {debounce,} from 'lodash'
     };
     const observer = new MutationObserver(mutationHandler)
     const $stylesheet = document.createElement('style');
+
+    observer.observe(document.body, {
+      'subtree':   true,
+      'childList': true,
+    });
     
     $stylesheet.type = 'text/css';
     $stylesheet.id = 'decentm-np-replacer-css';
