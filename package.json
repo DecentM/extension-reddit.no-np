@@ -1,7 +1,7 @@
 {
-  "name": "JSON.format",
+  "name": "Reddit.no-NP",
   "version": "1.2.0",
-  "description": "Format JSON responses in the browser",
+  "description": "Replaces all no-participation links on Reddit to their regular version",
   "scripts": {
     "dev": "webextension-toolbox dev",
     "build": "webextension-toolbox build"
